@@ -10,7 +10,7 @@ use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::GetModuleHand
 
 mod interceptor;
 
-const FPAKFILE_CHECK: usize = 0x3DE6650;
+const FPAKFILE_CHECK: usize = 0x3E3F2B0;
 
 unsafe fn thread_func() {
     Console::AllocConsole().unwrap();
