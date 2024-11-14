@@ -27,3 +27,7 @@ jobs:
         
       - name: Build Rust project
         run: cargo build --release
+        uses: actions/upload-artifact@v3
+        with:
+          name: 绝美patch
+          path: target\debug
