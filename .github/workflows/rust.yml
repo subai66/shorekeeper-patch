@@ -25,5 +25,5 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.1
         
-       - name: Build Rust project
+      - name: Build Rust project
         run: cargo build --release
