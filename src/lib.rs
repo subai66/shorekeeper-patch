@@ -34,6 +34,10 @@ unsafe fn thread_func() {
     let dll_name = String::from_utf8_lossy(&buffer[..length as usize]);
     let dll_file_name = dll_name.split('\\').last().unwrap_or_default().to_lowercase();
 
+    // 调试输出
+    println!("Expected DLL Name: {}", EXPECTED_DLL_NAME.to_lowercase());
+    println!("Actual DLL File Name: {}", dll_file_name);
+
     // 验证 DLL 文件名是否正确
     if dll_file_name != EXPECTED_DLL_NAME.to_lowercase() {
         eprintln!("您当前版本为修改版本，疑似被黑客修改，版本不安全，请相关渠道下载安全版本 Your current version is a modified version, which is suspected to have been modified by hackers and is not secure, please download the security version from the relevant channels");
