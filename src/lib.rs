@@ -1,9 +1,6 @@
 use std::thread;
 use std::time::Duration;
-use std::ffi::CString;
-use std::ptr;
 use std::path::Path;
-use std::fs;
 
 use ilhook::x64::Registers;
 use interceptor::Interceptor;
@@ -22,17 +19,19 @@ unsafe fn thread_func() {
         eprintln!("Failed to allocate console.");
         return;
     }
+    
     // 获取当前 DLL 文件名
     let mut buffer = vec![0u8; 260]; // 文件名缓冲区
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
     
-    let length = GetModuleFileNameA(module, buffer.as_mut_ptr() as *mut i8, buffer.len() as u32);
+    let length = GetModuleFileNameA(module, buffer.as_mut_slice());
     if length == 0 {
         eprintln!("Failed to get module file name.");
         return;
     }
 
-    let dll_name = CString::from_vec_lossy(buffer).to_string_lossy().into_owned();
+    // 从字节缓冲区转换为字符串
+    let dll_name = String::from_utf8_lossy(&buffer[..length as usize]);
     let dll_file_name = Path::new(&dll_name).file_name().unwrap_or_default().to_string_lossy();
 
     // 验证 DLL 文件名是否正确
