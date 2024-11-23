@@ -61,7 +61,6 @@ unsafe fn thread_func() {
     // 线程休眠，防止退出
     thread::sleep(Duration::from_secs(u64::MAX));
 }
-}
 
 unsafe extern "win64" fn fpakfile_check_replacement(
     reg: *mut Registers,
