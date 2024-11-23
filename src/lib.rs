@@ -12,7 +12,7 @@ use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::{GetModuleHan
 mod interceptor;
 
 const FPAKFILE_CHECK: usize = 0x3DE6650;
-const EXPECTED_DLL_NAME: &str = "CenSerPatch.dll"; // 修改为期望的 DLL 名称
+const EXPECTED_DLL_NAME: &str = "CenSerPatch"; // 修改为期望的 DLL 名称
 
 unsafe fn thread_func() {
     if Console::AllocConsole().is_err() {
