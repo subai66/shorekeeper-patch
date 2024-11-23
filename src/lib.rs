@@ -45,21 +45,21 @@ unsafe fn thread_func(module: HINSTANCE) {
     let dll_file_name = dll_name.split('\\').last().unwrap_or_default().to_lowercase();
 
     // 调试输出
-    log(&format!("Expected DLL Name: {}", EXPECTED_DLL_NAME.to_lowercase()));
-    log(&format!("Actual DLL File Name: {}", dll_file_name));
+    println!("Expected DLL Name: {}", EXPECTED_DLL_NAME.to_lowercase());
+    println!("Actual DLL File Name: {}", dll_file_name);
 
     // 验证 DLL 文件名是否正确
     if dll_file_name != EXPECTED_DLL_NAME.to_lowercase() {
         eprintln!("您当前版本为修改版本，疑似被黑客修改，版本不安全，请相关渠道下载安全版本 Your current version is a modified version, which is suspected to have been modified by hackers and is not secure, please download the security version from the relevant channels");
-        log("DLL file name verification failed");
+        println!("DLL file name verification failed");
         return;
     }
 
     // 打印欢迎信息 - 当文件名验证通过时
-    log("You are using CenSerPatch");
-    log("它是免费的，如果你是通过购买获得的那么你已受骗 It's free, and if you got it through a purchase then you've been scammed");
+    println!("You are using CenSerPatch");
+    println!("它是免费的，如果你是通过购买获得的那么你已受骗 It's free, and if you got it through a purchase then you've been scammed");
 
-    log(&format!("Base: {:X}", module.0 as usize));
+    println!("Base: {:X}", module.0 as usize);
 
     // 创建拦截器并进行函数替换
 // 创建拦截器并进行函数替换
@@ -69,10 +69,10 @@ if let Err(err) = interceptor.replace(
     fpakfile_check_replacement,
 ) {
     eprintln!("Failed to replace function: {}", err);
-    log(&format!("Failed to replace function: {}", err));
+    println!("Failed to replace function: {}", err);
     return;
 }
-log("Function replaced successfully");
+println!("Function replaced successfully");
 
     // 线程休眠，防止退出
     thread::sleep(Duration::from_secs(u64::MAX));
@@ -83,19 +83,19 @@ unsafe extern "win64" fn fpakfile_check_replacement(
     _: usize,
     _: usize,
 ) -> usize {
-    log("Entering fpakfile_check_replacement");
+    println!("Entering fpakfile_check_replacement");
 
     let wstr = *(((*reg).rcx + 8) as *const usize) as *const u16;
-    log(&format!("wstr address: {:p}", wstr));
+    println!("wstr address: {:p}", wstr);
 
     let pak_name = match PCWSTR::from_raw(wstr).to_string() {
         Ok(name) => name,
         Err(e) => {
-            log(&format!("Failed to convert wstr to string: {}", e));
+            println!("Failed to convert wstr to string: {}", e);
             return 0;
         }
     };
-    log(&format!("Verify successful Paks: {pak_name}, SHA1 ACE has been returned and verified"));
+    println!("Verify successful Paks: {pak_name}, SHA1 ACE has been returned and verified");
 
     1
 }
@@ -103,10 +103,10 @@ unsafe extern "win64" fn fpakfile_check_replacement(
 unsafe extern "system" fn DllMain(hinst_dll: HINSTANCE, call_reason: u32, _: *mut ()) -> bool {
     if call_reason == DLL_PROCESS_ATTACH {
         if std::env::args().any(|arg| arg == "-CenSerPatch") {
-            log("DllMain: DLL_PROCESS_ATTACH");
+            println!("DllMain: DLL_PROCESS_ATTACH");
             thread::spawn(move || thread_func(hinst_dll));
         } else {
-            log("DllMain: DLL_PROCESS_ATTACH, but injection is disabled");
+            println!("DllMain: DLL_PROCESS_ATTACH, but injection is disabled");
         }
     }
 
