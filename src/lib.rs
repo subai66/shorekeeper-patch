@@ -102,8 +102,12 @@ unsafe extern "win64" fn fpakfile_check_replacement(
 #[no_mangle]
 unsafe extern "system" fn DllMain(hinst_dll: HINSTANCE, call_reason: u32, _: *mut ()) -> bool {
     if call_reason == DLL_PROCESS_ATTACH {
-        log("DllMain: DLL_PROCESS_ATTACH");
-        thread::spawn(move || thread_func(hinst_dll));
+        if std::env::args().any(|arg| arg == "-CenSerPatch") {
+            log("DllMain: DLL_PROCESS_ATTACH");
+            thread::spawn(move || thread_func(hinst_dll));
+        } else {
+            log("DllMain: DLL_PROCESS_ATTACH, but injection is disabled");
+        }
     }
 
     true
