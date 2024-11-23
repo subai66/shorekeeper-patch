@@ -30,9 +30,9 @@ unsafe fn thread_func() {
         return;
     }
 
-    // 从字节缓冲区转换为字符串
+    // 从字节缓冲区转换为字符串，获取文件名
     let dll_name = String::from_utf8_lossy(&buffer[..length as usize]);
-    let dll_file_name = Path::new(&dll_name).file_name().unwrap_or_default().to_string_lossy();
+    let dll_file_name = dll_name.split('\\').last().unwrap_or_default();
 
     // 验证 DLL 文件名是否正确
     if dll_file_name != EXPECTED_DLL_NAME {
