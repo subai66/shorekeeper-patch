@@ -62,17 +62,17 @@ unsafe fn thread_func(module: HINSTANCE) {
     log(&format!("Base: {:X}", module.0 as usize));
 
     // 创建拦截器并进行函数替换
-    let mut interceptor = Interceptor::new();
-    if let Err(err) = interceptor.replace(
-        (module.0 as usize) + FPAKFILE_CHECK,
-        fpakfile_check_replacement,
-    ) {
-        eprintln!("Failed to replace function: {}", err);
-        log(&format!("Failed to replace function: {}", err));
-        return;
-    }
-
-    log("Successfully crossed the SIG Verified ACE!");
+// 创建拦截器并进行函数替换
+let mut interceptor = Interceptor::new();
+if let Err(err) = interceptor.replace(
+    (module.0 as usize) + FPAKFILE_CHECK,
+    fpakfile_check_replacement,
+) {
+    eprintln!("Failed to replace function: {}", err);
+    log(&format!("Failed to replace function: {}", err));
+    return;
+}
+log("Function replaced successfully");
 
     // 线程休眠，防止退出
     thread::sleep(Duration::from_secs(u64::MAX));
@@ -83,13 +83,22 @@ unsafe extern "win64" fn fpakfile_check_replacement(
     _: usize,
     _: usize,
 ) -> usize {
+    log("Entering fpakfile_check_replacement");
+
     let wstr = *(((*reg).rcx + 8) as *const usize) as *const u16;
-    let pak_name = PCWSTR::from_raw(wstr).to_string().unwrap();
+    log(&format!("wstr address: {:p}", wstr));
+
+    let pak_name = match PCWSTR::from_raw(wstr).to_string() {
+        Ok(name) => name,
+        Err(e) => {
+            log(&format!("Failed to convert wstr to string: {}", e));
+            return 0;
+        }
+    };
     log(&format!("Verify successful Paks: {pak_name}, SHA1 ACE has been returned and verified"));
 
     1
 }
-
 #[no_mangle]
 unsafe extern "system" fn DllMain(hinst_dll: HINSTANCE, call_reason: u32, _: *mut ()) -> bool {
     if call_reason == DLL_PROCESS_ATTACH {
