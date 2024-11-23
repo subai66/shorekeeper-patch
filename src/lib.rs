@@ -14,7 +14,7 @@ mod interceptor;
 const FPAKFILE_CHECK: usize = 0x3DE6650;
 const EXPECTED_DLL_NAME: &str = "censerpatch.dll"; // 修改为期望的 DLL 名称
 
-unsafe fn thread_func() {
+unsafe fn thread_func(module: HINSTANCE) {
     if Console::AllocConsole().is_err() {
         eprintln!("Failed to allocate console.");
         return;
@@ -22,7 +22,6 @@ unsafe fn thread_func() {
 
     // 获取当前 DLL 文件名
     let mut buffer = vec![0u8; 1024]; // 文件名缓冲区
-    let module = GetModuleHandleA(PCSTR::null()).unwrap();
 
     let length = GetModuleFileNameA(module, buffer.as_mut_slice());
     if length == 0 {
@@ -79,9 +78,9 @@ unsafe extern "win64" fn fpakfile_check_replacement(
 }
 
 #[no_mangle]
-unsafe extern "system" fn DllMain(_: HINSTANCE, call_reason: u32, _: *mut ()) -> bool {
+unsafe extern "system" fn DllMain(hinst_dll: HINSTANCE, call_reason: u32, _: *mut ()) -> bool {
     if call_reason == DLL_PROCESS_ATTACH {
-        thread::spawn(|| thread_func());
+        thread::spawn(|| thread_func(hinst_dll));
     }
 
     true
