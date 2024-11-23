@@ -1,13 +1,13 @@
 use std::thread;
 use std::time::Duration;
-use std::path::Path;
 
 use ilhook::x64::Registers;
 use interceptor::Interceptor;
-use windows::core::{PCSTR, PCWSTR};
+use windows::core::PCWSTR;
 use windows::Win32::System::Console;
 use windows::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
-use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::{GetModuleHandleA, GetModuleFileNameA}};
+use windows::Win32::System::LibraryLoader::GetModuleFileNameA;
+use windows::Win32::Foundation::HINSTANCE;
 
 mod interceptor;
 
@@ -80,7 +80,7 @@ unsafe extern "win64" fn fpakfile_check_replacement(
 #[no_mangle]
 unsafe extern "system" fn DllMain(hinst_dll: HINSTANCE, call_reason: u32, _: *mut ()) -> bool {
     if call_reason == DLL_PROCESS_ATTACH {
-        thread::spawn(|| thread_func(hinst_dll));
+        thread::spawn(move || thread_func(hinst_dll));
     }
 
     true
