@@ -21,7 +21,7 @@ unsafe fn thread_func() {
     }
 
     // 获取当前 DLL 文件名
-    let mut buffer = vec![0u8; 260]; // 文件名缓冲区
+    let mut buffer = vec![0u8; 1024]; // 文件名缓冲区
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
 
     let length = GetModuleFileNameA(module, buffer.as_mut_slice());
@@ -32,10 +32,10 @@ unsafe fn thread_func() {
 
     // 从字节缓冲区转换为字符串，获取文件名
     let dll_name = String::from_utf8_lossy(&buffer[..length as usize]);
-    let dll_file_name = dll_name.split('\\').last().unwrap_or_default();
+    let dll_file_name = dll_name.split('\\').last().unwrap_or_default().to_lowercase();
 
     // 验证 DLL 文件名是否正确
-    if dll_file_name != EXPECTED_DLL_NAME {
+    if dll_file_name != EXPECTED_DLL_NAME.to_lowercase() {
         eprintln!("您当前版本为修改版本，疑似被黑客修改，版本不安全，请相关渠道下载安全版本 Your current version is a modified version, which is suspected to have been modified by hackers and is not secure, please download the security version from the relevant channels");
         return;
     }
@@ -60,6 +60,7 @@ unsafe fn thread_func() {
 
     // 线程休眠，防止退出
     thread::sleep(Duration::from_secs(u64::MAX));
+}
 }
 
 unsafe extern "win64" fn fpakfile_check_replacement(
