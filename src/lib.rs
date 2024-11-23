@@ -14,8 +14,8 @@ const FPAKFILE_CHECK: usize = 0x3E3F2B0;
 
 unsafe fn thread_func() {
     Console::AllocConsole().unwrap();
-    println!("Wuthering Waves signature check bypass");
-    println!("Don't forget to visit https://discord.gg/reversedrooms");
+    println!("你正在使用CenSerPatch");
+    println!("它是免费的，如果你是通过购买获得的那么你已受骗");
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
     println!("Base: {:X}", module.0 as usize);
@@ -28,7 +28,7 @@ unsafe fn thread_func() {
         )
         .unwrap();
 
-    println!("Successfully initialized!");
+    println!("已成功越过sig验证 ACE!");
     thread::sleep(Duration::from_secs(u64::MAX));
 }
 
@@ -39,7 +39,7 @@ unsafe extern "win64" fn fpakfile_check_replacement(
 ) -> usize {
     let wstr = *(((*reg).rcx + 8) as *const usize) as *const u16;
     let pak_name = PCWSTR::from_raw(wstr).to_string().unwrap();
-    println!("Trying to verify pak: {pak_name}, returning true");
+    println!("验证成功的Paks: {pak_name}, 已返回并验证SHA1 ACE");
 
     1
 }
