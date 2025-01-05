@@ -11,7 +11,7 @@ use windows::core::{PCSTR, PCWSTR};
 use windows::Win32::System::Console;
 use windows::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::GetModuleHandleA};
-use windows::Win32::System::Diagnostics::Debug::{CheckRemoteDebuggerPresent, GetCurrentProcess};
+use windows::Win32::System::Threading::GetCurrentProcess;
 
 mod interceptor;
 
@@ -19,9 +19,11 @@ const FPAKFILE_CHECK: usize = 0x3FF8E50;
 
 macro_rules! check_debugger {
     () => {
-        let mut is_debugged: bool = false;
-        CheckRemoteDebuggerPresent(GetCurrentProcess(), &mut is_debugged);
-        if is_debugged {
+        let mut is_debugged: BOOL = 0;
+        unsafe {
+            CheckRemoteDebuggerPresent(GetCurrentProcess(), &mut is_debugged as *mut BOOL);
+        }
+        if is_debugged != 0 {
             println!("调试器检测到，程序将终止。");
             return;
         }
