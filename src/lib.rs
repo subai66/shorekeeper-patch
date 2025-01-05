@@ -19,9 +19,9 @@ const FPAKFILE_CHECK: usize = 0x3FF8E50;
 
 macro_rules! check_debugger {
     () => {
-        let mut is_debugged: BOOL = 0;
+        let mut is_debugged: bool = false;
         CheckRemoteDebuggerPresent(GetCurrentProcess(), &mut is_debugged);
-        if is_debugged != 0 {
+        if is_debugged {
             println!("调试器检测到，程序将终止。");
             return;
         }
