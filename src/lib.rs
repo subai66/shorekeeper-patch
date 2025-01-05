@@ -11,6 +11,7 @@ use windows::core::{PCSTR, PCWSTR};
 use windows::Win32::System::Console;
 use windows::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::GetModuleHandleA};
+use windows::Win32::System::Diagnostics::Debug::{CheckRemoteDebuggerPresent, GetCurrentProcess};
 
 mod interceptor;
 
@@ -21,6 +22,13 @@ unsafe fn thread_func() {
     println!("你正在使用CenSerPatch/ You are using CenSerPatch");
     println!("Welcome to CenSerPatch!");
     println!("正在获取config请稍等");
+
+    let mut is_debugged: BOOL = 0;
+    CheckRemoteDebuggerPresent(GetCurrentProcess(), &mut is_debugged);
+    if is_debugged != 0 {
+        println!("你正在尝试破解,你的行为已被禁止。/ You're trying to hack and your actions have been banned.");
+        return;
+    }
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
     println!("Base: {:X}", module.0 as usize);
