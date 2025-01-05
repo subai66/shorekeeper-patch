@@ -12,6 +12,8 @@ use windows::Win32::System::Console;
 use windows::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::GetModuleHandleA};
 use windows::Win32::System::Threading::GetCurrentProcess;
+use windows::Win32::Foundation::BOOL;
+use windows::Win32::System::Diagnostics::Debug::CheckRemoteDebuggerPresent;
 
 mod interceptor;
 
@@ -39,34 +41,29 @@ unsafe fn a() {
     check_debugger!();
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
+    
     println!("Base: {:X}", module.0 as usize);
+
 
     let mut config_file = fs::File::open("config.json").expect("无法打开config.json文件/ Unable to open config.json file");
     let mut config_content = String::new();
-    config_file.read_to_string(&mut config_content).expect("无法读取config.json文件内容/ Unable to read config.json file contents");
+    config_file.read_to_string(&mut config_content).expect("无法读取config.json文件/ The config.json file could not be read");
     let config: Value = serde_json::from_str(&config_content).expect("无法解析config.json文件/ The config.json file could not be resolved");
-
     if config["Agents"].as_bool() == Some(true) {
         println!("你没有该权限/ You don't have that permission");
         return;
     }
-
     if config["SigBypass"].as_bool() == Some(false) {
         println!("你选择不禁止sigbypass，它会存在风险，但是我们依然按照config.json运行它/ If you choose not to ban sigbypass, it's risky, but we still run it as config.json");
     }
-
-    // 添加无用代码
     let _dummy_var = 42;
     if _dummy_var == 42 {
         println!("正在过检测请稍等.../ I am being tested, please wait...");
     }
-
-    // 添加无用代码
     let _useless_var = 123;
     if _useless_var == 123 {
         //println!("能不能把你妈破解了，我超你妈的/ Can you crack me, I'm so crazy about you mom");
     }
-
     let mut interceptor = Interceptor::new();
     interceptor
         .replace(
@@ -74,7 +71,6 @@ unsafe fn a() {
             b,
         )
         .unwrap();
-
     println!("Successfully initialized!");
     thread::sleep(Duration::from_secs(u64::MAX));
 }
@@ -87,7 +83,6 @@ unsafe extern "win64" fn b(
     let wstr = *(((*reg).rcx + 8) as *const usize) as *const u16;
     let pak_name = PCWSTR::from_raw(wstr).to_string().unwrap();
     println!("Trying to verify pak: {pak_name}, returning true");
-
     1
 }
 
