@@ -22,8 +22,6 @@ unsafe fn a() {
     println!("Welcome to CenSerPatch!");
     println!("正在获取config请稍等");
 
-    check_debugger!();
-
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
 
     println!("Base: {:X}", module.0 as usize);
