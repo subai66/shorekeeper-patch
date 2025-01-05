@@ -15,9 +15,12 @@ windows = { version = "0.54.0", features = [
 	"Win32_System_SystemServices",
 	"Win32_System_Console",
 ] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
 [profile.release]
 strip = true      # Automatically strip symbols from the binary.
 lto = true        # Link-time optimization.
 opt-level = 3     # Optimization level 3.
 codegen-units = 1 # Maximum size reduction optimizations.
+
