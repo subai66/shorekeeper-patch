@@ -11,9 +11,6 @@ use windows::core::{PCSTR, PCWSTR};
 use windows::Win32::System::Console;
 use windows::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::GetModuleHandleA};
-use windows::Win32::System::Threading::GetCurrentProcess;
-use windows::Win32::Foundation::BOOL;
-use windows::Win32::System::Diagnostics::Debug::CheckRemoteDebuggerPresent;
 
 mod interceptor;
 
@@ -30,7 +27,6 @@ unsafe fn a() {
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
 
     println!("Base: {:X}", module.0 as usize);
-
 
     let mut config_file = fs::File::open("config.json").expect("无法打开config.json文件/ Unable to open config.json file");
     let mut config_content = String::new();
