@@ -14,7 +14,7 @@ use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::GetModuleHand
 
 mod interceptor;
 
-const FPAKFILE_CHECK: usize = 0x3FF8E50;
+const FPAKFILE_CHECK: usize = 0x4051B60;
 
 unsafe fn a() {
     Console::AllocConsole().unwrap();
