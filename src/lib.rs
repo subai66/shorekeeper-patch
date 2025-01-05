@@ -18,22 +18,28 @@ const FPAKFILE_CHECK: usize = 0x3FF8E50;
 
 unsafe fn thread_func() {
     Console::AllocConsole().unwrap();
-    println!("Wuthering Waves signature check bypass");
-    println!("Don't forget to visit https://discord.gg/reversedrooms");
+    println!("你正在使用CenSerPatch/ You are using CenSerPatch");
+    println!("Welcome to CenSerPatch!");
+    println!("正在获取config请稍等");
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
     println!("Base: {:X}", module.0 as usize);
 
     // 读取配置文件
-    let mut config_file = fs::File::open("config.json").expect("无法打开config.json文件");
+    let mut config_file = fs::File::open("config.json").expect("无法打开config.json文件/ Unable to open config.json file");
     let mut config_content = String::new();
-    config_file.read_to_string(&mut config_content).expect("无法读取config.json文件内容");
-    let config: Value = serde_json::from_str(&config_content).expect("无法解析config.json文件");
+    config_file.read_to_string(&mut config_content).expect("无法读取config.json文件内容/ Unable to read config.json file contents");
+    let config: Value = serde_json::from_str(&config_content).expect("无法解析config.json文件/ The config.json file could not be resolved");
 
-    // 检查Agents字段是否为false
-    if config["Agents"].as_bool() == Some(false) {
-        println!("你没有该权限");
+    if config["Agents"].as_bool() == Some(true) {
+        println!("你没有该权限/ You don't have that permission");
         return;
+    }
+
+    println!("请勿倒卖本程序，否则后果自负。");
+
+    if config["SigBypass"].as_bool() == Some(false) {
+        println!("你选择不禁止sigbypass，它会存在风险，但是我们依然按照config.json运行它/ If you choose not to ban sigbypass, it's risky, but we still run it as config.json");
     }
 
     let mut interceptor = Interceptor::new();

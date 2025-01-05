@@ -1,5 +1,6 @@
 {
-    "Agents": false
-    "IP": 0.0.0.0
+    "Agents": false,
+    "SigBypass": true,
+    "IP": "0.0.0.0",
     "proxy": 1337
 }
