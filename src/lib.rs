@@ -17,23 +17,28 @@ mod interceptor;
 
 const FPAKFILE_CHECK: usize = 0x3FF8E50;
 
-unsafe fn thread_func() {
+macro_rules! check_debugger {
+    () => {
+        let mut is_debugged: BOOL = 0;
+        CheckRemoteDebuggerPresent(GetCurrentProcess(), &mut is_debugged);
+        if is_debugged != 0 {
+            println!("调试器检测到，程序将终止。");
+            return;
+        }
+    };
+}
+
+unsafe fn a() {
     Console::AllocConsole().unwrap();
     println!("你正在使用CenSerPatch/ You are using CenSerPatch");
     println!("Welcome to CenSerPatch!");
     println!("正在获取config请稍等");
 
-    let mut is_debugged: BOOL = 0;
-    CheckRemoteDebuggerPresent(GetCurrentProcess(), &mut is_debugged);
-    if is_debugged != 0 {
-        println!("你正在尝试破解,你的行为已被禁止。/ You're trying to hack and your actions have been banned.");
-        return;
-    }
+    check_debugger!();
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
     println!("Base: {:X}", module.0 as usize);
 
-    // 读取配置文件
     let mut config_file = fs::File::open("config.json").expect("无法打开config.json文件/ Unable to open config.json file");
     let mut config_content = String::new();
     config_file.read_to_string(&mut config_content).expect("无法读取config.json文件内容/ Unable to read config.json file contents");
@@ -44,17 +49,27 @@ unsafe fn thread_func() {
         return;
     }
 
-    println!("请勿倒卖本程序，否则后果自负。");
-
     if config["SigBypass"].as_bool() == Some(false) {
         println!("你选择不禁止sigbypass，它会存在风险，但是我们依然按照config.json运行它/ If you choose not to ban sigbypass, it's risky, but we still run it as config.json");
+    }
+
+    // 添加无用代码
+    let _dummy_var = 42;
+    if _dummy_var == 42 {
+        println!("正在过检测请稍等.../ I am being tested, please wait...");
+    }
+
+    // 添加无用代码
+    let _useless_var = 123;
+    if _useless_var == 123 {
+        //println!("能不能把你妈破解了，我超你妈的/ Can you crack me, I'm so crazy about you mom");
     }
 
     let mut interceptor = Interceptor::new();
     interceptor
         .replace(
             (module.0 as usize) + FPAKFILE_CHECK,
-            fpakfile_check_replacement,
+            b,
         )
         .unwrap();
 
@@ -62,7 +77,7 @@ unsafe fn thread_func() {
     thread::sleep(Duration::from_secs(u64::MAX));
 }
 
-unsafe extern "win64" fn fpakfile_check_replacement(
+unsafe extern "win64" fn b(
     reg: *mut Registers,
     _: usize,
     _: usize,
@@ -77,7 +92,7 @@ unsafe extern "win64" fn fpakfile_check_replacement(
 #[no_mangle]
 unsafe extern "system" fn DllMain(_: HINSTANCE, call_reason: u32, _: *mut ()) -> bool {
     if call_reason == DLL_PROCESS_ATTACH {
-        thread::spawn(|| thread_func());
+        thread::spawn(|| a());
     }
 
     true
