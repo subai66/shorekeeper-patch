@@ -19,19 +19,6 @@ mod interceptor;
 
 const FPAKFILE_CHECK: usize = 0x3FF8E50;
 
-macro_rules! check_debugger {
-    () => {
-        let mut is_debugged: BOOL = 0;
-        unsafe {
-            CheckRemoteDebuggerPresent(GetCurrentProcess(), &mut is_debugged as *mut BOOL);
-        }
-        if is_debugged != 0 {
-            println!("调试器检测到，程序将终止。");
-            return;
-        }
-    };
-}
-
 unsafe fn a() {
     Console::AllocConsole().unwrap();
     println!("你正在使用CenSerPatch/ You are using CenSerPatch");
@@ -41,7 +28,7 @@ unsafe fn a() {
     check_debugger!();
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
-    
+
     println!("Base: {:X}", module.0 as usize);
 
 
