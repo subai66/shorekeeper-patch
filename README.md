@@ -11,4 +11,3 @@ Consider joining our [discord server](https://discord.gg/reversedrooms)
 #### Credits
 - xeondev
 - xavo95
-- DevilProMT
