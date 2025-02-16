@@ -15,7 +15,7 @@ const FPAKFILE_CHECK: usize = 0x40FF5F0;
 unsafe fn thread_func() {
     Console::AllocConsole().unwrap();
     println!("Wuthering Waves signature check bypass");
-    println!("You are using Sigbypass from CenServer.");
+    println!("Don't forget to visit https://discord.gg/reversedrooms");
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
     println!("Base: {:X}", module.0 as usize);
