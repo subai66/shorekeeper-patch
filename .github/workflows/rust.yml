@@ -28,7 +28,7 @@ jobs:
       - name: Build Rust project
         run: cargo build --release
         
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: CenSerPatch
           path: target\release\*.dll
