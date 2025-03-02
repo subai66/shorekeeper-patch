@@ -10,12 +10,12 @@ use windows::Win32::{Foundation::HINSTANCE, System::LibraryLoader::GetModuleHand
 
 mod interceptor;
 
-const FPAKFILE_CHECK: usize = 0x41CA5F0;
+const FPAKFILE_CHECK: usize = 0x41CE7F0;
 
 unsafe fn thread_func() {
     Console::AllocConsole().unwrap();
-    println!("Wuthering Waves signature check bypass");
-    println!("Don't forget to visit https://discord.gg/reversedrooms");
+    println!("BY 苏白");
+    println!("Sigbypass");
 
     let module = GetModuleHandleA(PCSTR::null()).unwrap();
     println!("Base: {:X}", module.0 as usize);
